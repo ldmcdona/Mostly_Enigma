@@ -1,5 +1,10 @@
 import random
 
+#The Enigma object.
+#Takes six index lists as arguments, and an empty dictionary that should probably made internally.
+#Has two internal functions:
+    #Encoding messages.
+    #Changing the rotors or plug board.
 class Enigma:
     def __init__(self, rotor1_f, rotor1_b, rotor2_f, rotor2_b, rotor3_f, rotor3_b, plugs):
         self.rotor1_f = rotor1_f
@@ -14,6 +19,9 @@ class Enigma:
         self.offset3 = 0
         self.master  = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
 
+    #Right, so, this is a pile of math. 
+    #Long story short it uses a pair of index lists to represent each rotor, with the rotors rotation
+    #being tracked via the 'offset' variables. Indexes are used instead of characters for ease of tracking.
     def encode(self):
         output = ""
         print("Enter message.")
@@ -21,6 +29,7 @@ class Enigma:
         x = x.lower()
 
         for letter in x:
+            #Only alphabetica characters are encoded. Spaces, numbers, punctuation, etc is ignored.
             if letter in self.master:
 
                 in_i1 = self.master.index(letter)
@@ -84,6 +93,7 @@ class Enigma:
                 if out_o1 < 0:
                     out_o1 += 26
 
+                #The rotors increment after each letter through the machine.
                 self.offset1 += 1
                 if self.offset1 > 25:
                     self.offset1 -= 26
@@ -107,7 +117,11 @@ class Enigma:
         print("Your encoded message: " + output)
         return
 
+    #Allows for character mapping with the plug board, allows rotors to be swapped, 
+    #and allows for manual adjustment of the rotor offset. 
     def modify(self):
+
+        #Plug board. Uses a dictionary for easy of use.
         print("Change Plugs? (y/n)")
         if input(">") == "y":
             while True:
@@ -143,10 +157,12 @@ class Enigma:
                     else:
                         print("Invalid character entered. Must be a letter.")
 
+        #Rotor selection. Uses the 'rotorWheels' helper function.
         print("Swap rotors? (y/n)")
         if input(">") == "y":
             self.rotor1_f, self.rotor1_b, self.rotor2_f, self.rotor2_b, self.rotor3_f, self.rotor3_b = rotorWheels()
 
+        #Rotor offset. Takes in three numbers and sets the offset values accordingly. 
         print("Set rotor offset? (y/n)")
         if input(">") == "y":
             i = 0
@@ -167,7 +183,8 @@ class Enigma:
         print("Modification complete.")
         return 
 
-
+#The main function makes the initial call to 'rotorWheels' and makes an engima
+#object. After that it enters a loop to call the different enigma functions.
 def main():
     r1f, r1b, r2f, r2b, r3f, r3b = rotorWheels()
     p = {}
@@ -185,6 +202,8 @@ def main():
             print("Invalid Input.")
 
 
+#Takes in a 'rotor wheel string' and converts it into a pair of index lists. 
+#For example, B mapping to H would be 1 mapping to 7. r1_f[1] = 7, r1_b[7] = 1
 def convert(r):
     master = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
     r1_f = {}
@@ -201,6 +220,9 @@ def convert(r):
     return r1_f, r1_b
 
 
+#This function calls the 'convert' helper function, passing in the 'rotor wheel strings' and 
+#collecting the resultant index lists. It also let's the user choose which three rotors to use.
+#Also, apparently I'm using the swiss enigma rotors. Whoops.
 def rotorWheels():
     w1 = "PEZUOHXSCVFMTBGLRINQJWAYDK"
     w2 = "ZOUESYDKFWPCIQXHMVBLGNJRAT"
@@ -223,6 +245,8 @@ def rotorWheels():
         f, b = convert(item)
         r_f.append(f)
         r_b.append(b)
+
+    #Alright so we end up with r_f and r_b each with five index lists inside. 
 
     taken = []
     i = 0
