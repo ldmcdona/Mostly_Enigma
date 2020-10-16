@@ -149,8 +149,8 @@ class Enigma:
                         if check == False:
                             taken.append(l1)
                             taken.append(l2)
-                            self.plugs[l1] = l2
-                            self.plugs[l2] = l1
+                            self.plugs[self.master.index(l1)] = self.master.index(l2)
+                            self.plugs[self.master.index(l2)] = self.master.index(l1)
                             break
                         else:
                             print("Invalid character entered. Character already used.")
